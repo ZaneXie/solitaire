@@ -1,7 +1,10 @@
 /**
  * Created by xiezongjun on 2016-09-06.
  */
-import {Card, DealColumn, MainColumns, RecycleColumns, CardColumn, MainColumn, DealColumnNextStat} from "./define";
+import {
+    Card, DealColumn, MainColumns, RecycleColumns, CardColumn, MainColumn,
+    RecycleColumn,
+} from "./define";
 
 function canMove(from: Card, to: Card): boolean {
     // 判断花色，不是相邻花色返回false。依赖CardType定义值
@@ -53,6 +56,58 @@ export class CardsStack {
         put(this.main.Seven, 7);
     }
 
+    // 从from列的pos位置开始，移动到to下
+    public moveMainToMain(fromColumn: MainColumn, pos: number, toColumn: MainColumn): number {
+        //@todo:单测
+        let from = fromColumn.cards[pos];
+        let to = toColumn.cards[0];
+
+        if (canMove(from, to)) {
+            let cards = fromColumn.cards.splice(0, pos + 1);
+            fromColumn.pos -= (pos + 1);
+            for (let i = cards.length - 1; i >= 0; i--) {
+                toColumn.cards.unshift(cards[i]);
+            }
+            toColumn.pos += (pos + 1);
+            return pos + 1;
+        }
+        return -1;
+    }
+
+    public moveMainToRecycle(fromColumn: MainColumn, recycle: RecycleColumn = null): number {
+        let card = fromColumn.cards[0];
+        if (recycle == null) {
+            recycle = this.recycle.getColumn(card.type);
+        }
+        if (recycle.doRecycle(card)) {
+            fromColumn.cards.splice(0, 1);
+            fromColumn.pos--;
+            return 0;
+        }
+        return -1;
+    }
+
+    public moveDealToRecycle(recycle: RecycleColumn = null): number {
+        if (this.deal.pos < 0) {
+            return -1;
+        }
+        // 从deal取一张卡片
+        let card: Card = this.deal.cards[this.deal.pos];
+
+        // 如果没有设置目的地列，根据from卡牌选择
+        if (recycle == null) {
+            recycle = this.recycle.getColumn(card.type)
+        }
+        // 成功移动卡牌
+        if (recycle.doRecycle(card)) {
+            this.deal.cards.splice(this.deal.pos, 1);
+            this.deal.pos--;
+            return this.deal.pos + 1;
+        }
+        return -1;
+    }
+
+    // 将发牌堆的第一张牌放置到目的列
     public moveDealToMain(mainColumn: MainColumn): number {
         if (this.deal.pos < 0) {
             return -1;

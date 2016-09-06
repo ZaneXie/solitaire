@@ -2,10 +2,10 @@
  * Created by xiezongjun on 2016-09-06.
  */
 
-import {CardColumn, Card} from "./define";
+import {CardColumn, Card, CardType} from "./define";
 import {CardsStack} from "./core";
 
-export function printStackNumbers(stack:CardsStack){
+export function printStackNumbers(stack: CardsStack) {
     console.log('all', stack.numbers.join(","));
 }
 export function printStack(stack: CardsStack,
@@ -36,8 +36,8 @@ export function printStack(stack: CardsStack,
     console.log('Seven', getColumnString(stack.main.Seven));
 
     logSeparator();
-    console.log('Recycle Diamonds', getColumnString(stack.recycle.Diamonds));
-    console.log('Recycle Hearts', getColumnString(stack.recycle.Hearts));
-    console.log('Recycle Clubs', getColumnString(stack.recycle.Clubs));
-    console.log('Recycle Spades', getColumnString(stack.recycle.Spades));
+    console.log('Recycle Diamonds', getColumnString(stack.recycle.getColumn(CardType.Diamonds)));
+    console.log('Recycle Hearts', getColumnString(stack.recycle.getColumn(CardType.Hearts)));
+    console.log('Recycle Clubs', getColumnString(stack.recycle.getColumn(CardType.Clubs)));
+    console.log('Recycle Spades', getColumnString(stack.recycle.getColumn(CardType.Spades)));
 }

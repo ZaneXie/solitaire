@@ -52,16 +52,22 @@ export class MainColumns {
 }
 
 export class RecycleColumns {
-    public Diamonds: RecycleColumn;
-    public Hearts: RecycleColumn;
-    public Spades: RecycleColumn;
-    public Clubs: RecycleColumn;
+    // public Diamonds: RecycleColumn;
+    // public Hearts: RecycleColumn;
+    // public Spades: RecycleColumn;
+    // public Clubs: RecycleColumn;
+
+    public columns: RecycleColumn[] = [];
 
     public constructor() {
-        this.Diamonds = new RecycleColumn();
-        this.Hearts = new RecycleColumn();
-        this.Spades = new RecycleColumn();
-        this.Clubs = new RecycleColumn();
+        this.columns[CardType.Diamonds] = new RecycleColumn(CardType.Diamonds);
+        this.columns[CardType.Hearts] = new RecycleColumn(CardType.Hearts);
+        this.columns[CardType.Spades] = new RecycleColumn(CardType.Spades);
+        this.columns[CardType.Clubs] = new RecycleColumn(CardType.Clubs);
+    }
+
+    public getColumn(type: CardType) {
+        return this.columns[type];
     }
 }
 
@@ -89,4 +95,33 @@ export class MainColumn extends CardColumn {
     public pos: number = 0;
 }
 export class RecycleColumn extends CardColumn {
+    public type: CardType;
+
+    public constructor(type: CardType) {
+        super();
+        this.type = type;
+    }
+
+    public canRecycle(card: Card): boolean {
+        if (this.type != card.type) {
+            return false;
+        }
+        if (this.cards.length === 0) {
+            if (card.number == 1) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        let top = this.cards[this.cards.length - 1];
+        return top.number + 1 === card.number;
+    }
+
+    public doRecycle(card: Card): boolean {
+        if (!this.canRecycle(card)) {
+            return false;
+        }
+        this.cards.push(card);
+        return true;
+    }
 }
