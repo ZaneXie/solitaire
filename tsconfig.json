@@ -2,16 +2,13 @@
   "compileOnSave": true,
   "compilerOptions": {
     "target": "es6",
-    "module": "commonjs",
-    "sourceMap": true
+    "module": "amd",
+    "outDir": "public/js/app",
+    "sourceMap": true,
+    "declaration": true
   },
-  //  "files": [
-  //    "src/common/vfs.ts",
-  //    "test/unit/common/vfs.ts",
-  //    "typings/index.d.ts"
-  //  ],
   "exclude": [
     "node_modules",
-    "dist"
+    "bower_components"
   ]
 }

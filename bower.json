@@ -1,0 +1,22 @@
+{
+  "name": "solitaire",
+  "description": "",
+  "main": "index.js",
+  "authors": [
+    "xiezongjun <xiezjsc@gmail.com>"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/ZaneXie/solitaire",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "requirejs": "^2.3.1",
+    "phaser": "^2.6.2",
+    "lodash": "^4.15.0"
+  }
+}

@@ -8,6 +8,7 @@
     "mime": "registry:dt/mime#0.0.0+20160316155526",
     "mocha": "registry:dt/mocha#2.2.5+20160720003353",
     "node": "registry:dt/node#6.0.0+20160831021119",
+    "phaser": "github:photonstorm/phaser/typescript/typings.json",
     "serve-static": "registry:dt/serve-static#0.0.0+20160606155157"
   },
   "dependencies": {}

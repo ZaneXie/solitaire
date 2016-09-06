@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="./js/lib/require.js"></script>
+    <script src="./js/lib/phaser.js"></script>
+    <script>
+        requirejs.config({
+            baseUrl: 'js/lib',
+            paths: {
+                app: '../app',
+            },
+            shim: {
+                phaser: {
+                    exports: 'Phaser'
+                },
+            }
+        });
+
+        requirejs(['app/tool/test']);
+    </script>
+</head>
+<body>
+
+</body>
+</html>
