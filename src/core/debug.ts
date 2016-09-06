@@ -2,14 +2,20 @@
  * Created by xiezongjun on 2016-09-06.
  */
 
-import {CardColumn} from "./define";
+import {CardColumn, Card} from "./define";
 import {CardsStack} from "./core";
-export function printStack(stack: CardsStack) {
+
+export function printStackNumbers(stack:CardsStack){
+    console.log('all', stack.numbers.join(","));
+}
+export function printStack(stack: CardsStack,
+                           cb: (card: Card) =>string = (card: Card)=>card.name) {
     function getColumnString(column: CardColumn) {
         let numbers = [];
         for (let card of column.cards) {
-            numbers.push(card.name);
+            numbers.push(cb(card));
         }
+
         return numbers.join(',');
     }
 

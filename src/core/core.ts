@@ -18,14 +18,19 @@ export class CardsStack {
     public main: MainColumns;
     public recycle: RecycleColumns;
 
+    public numbers: number[];
+
     public constructor() {
         this.deal = new DealColumn();
         this.main = new MainColumns();
         this.recycle = new RecycleColumns();
     }
 
-    public shuffle() {
-        let numbers = this.getRandomNumbers();
+    public shuffle(numbers: number[] = null) {
+        if (numbers === null) {
+            numbers = this.getRandomNumbers();
+        }
+        this.numbers = numbers;
         let pos = 0;
         for (let i = 0; i < 24; i++) {
             this.deal.cards.push(new Card(numbers[pos]));
@@ -48,9 +53,9 @@ export class CardsStack {
         put(this.main.Seven, 7);
     }
 
-    public moveDealToMain(mainColumn: MainColumn): boolean {
+    public moveDealToMain(mainColumn: MainColumn): number {
         if (this.deal.pos < 0) {
-            return false;
+            return -1;
         }
 
         // 从deal取一张卡片
@@ -66,7 +71,7 @@ export class CardsStack {
 
         // 判断是否可移动
         if (!canMove(from, to)) {
-            return false;
+            return -1;
         }
 
         // 可移动，从Deal删除并加入Main
@@ -76,7 +81,7 @@ export class CardsStack {
         mainColumn.cards.unshift(from);
         mainColumn.pos++;
 
-        return true;
+        return this.deal.pos + 1;
     }
 
     private getRandomNumbers(): number[] {
