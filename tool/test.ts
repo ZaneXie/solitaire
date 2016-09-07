@@ -6,7 +6,7 @@ import lodash = require('lodash');
 
 import {CardsStack} from "../src/core/core";
 import {DealColumnNextStat} from "../src/core/define";
-import {printStack, printStackNumbers} from "../src/core/debug";
+import {printStack, printStackNumbers} from "../src/debug/debug";
 
 let mock = [
     35, 52, 51, 50, 2,

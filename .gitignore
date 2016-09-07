@@ -1,5 +1,6 @@
 *.js
 *.js.map
+!gulpfile.js
 node_modules
 typings
 .idea
