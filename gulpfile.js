@@ -49,4 +49,4 @@ gulp.task('webserver', function () {
 });
 gulp.task('ts', ['ts-test', 'ts-src']);
 
-gulp.task('default', ['ts', 'woer-files', 'webserver'])
+gulp.task('default', ['ts', 'bower-files', 'webserver'])
