@@ -44,7 +44,7 @@ gulp.task('webserver', function () {
     gulp.src('./public')
         .pipe(webserver({
             livereload: true,
-            directoryListing: true,
+            // directoryListing: true,
         }));
 });
 gulp.task('ts', ['ts-test', 'ts-src']);
