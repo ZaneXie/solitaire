@@ -7,6 +7,7 @@ const ts = require('gulp-typescript');
 const del = require('del');
 const mainBowerFiles = require('main-bower-files');
 const webserver = require('gulp-webserver');
+const minify = require('gulp-minify');
 
 gulp.task('clean-ts', function (cb) {
     del([
@@ -37,6 +38,12 @@ gulp.task('ts-test', ['ts-src'], function () {
 
 gulp.task("bower-files", function () {
     return gulp.src(mainBowerFiles())
+        .pipe(minify({
+            ext: {
+                src: '-debug.js',
+                min: '.js',
+            }
+        }))
         .pipe(gulp.dest('public/js/lib'));
 });
 
