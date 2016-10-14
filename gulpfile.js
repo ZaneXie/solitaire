@@ -23,7 +23,7 @@ gulp.task('ts-src', ['clean-ts'], function () {
         .pipe(ts({
             target: "es6",
             module: "amd",
-            sourceMap: true
+            sourceMap: false
         }));
     return tsResult.js.pipe(gulp.dest("public/js/app"));
 });

@@ -6,6 +6,7 @@ import Phaser = require('phaser');
 import {CardsStack} from "../core/core";
 import Game = Phaser.Game;
 import {Card} from "../core/define";
+import lodash = require("lodash");
 
 function checkOverlap(spriteA, spriteB) {
 
@@ -16,21 +17,19 @@ function checkOverlap(spriteA, spriteB) {
 
 }
 
-let card1, card2;
+let card1: Phaser.Sprite, card2: Phaser.Sprite;
 let text;
+let cards: Phaser.Sprite[] = [];
 export class Solitaire {
 
-    private game:Game;
-    private cardsStack:CardsStack;
+    private game: Game;
+    private cardsStack: CardsStack;
 
     public constructor() {
     }
 
     preload() {
-        for (let i = 1; i < 53; i++) {
-            let card = new Card(i);
-            this.game.load.image(card.name, 'images/cards/SVG-cards-1.3/' + card.getImageName());
-        }
+        this.game.load.atlasJSONHash('poker', 'images/cards/poker.png', 'images/cards/poker.json');
     }
 
     create() {
@@ -39,25 +38,43 @@ export class Solitaire {
         this.cardsStack = new CardsStack();
         this.cardsStack.shuffle();
 
-        function createCard(card:Card, x:number = 0, y:number = 0) {
-            let ret = game.add.sprite(x, y, card.name);
+        function createCard(card: Card, pos: {x: number, y: number} = {x: 0, y: 0}): Phaser.Sprite {
+            let ret = game.add.sprite(pos.x, pos.y, 'poker', card.getImageName());
             ret.scale.setTo(0.3, 0.3);
             ret.inputEnabled = true;
             ret.input.enableDrag();
             return ret;
         }
 
-        card1 = createCard(this.cardsStack.deal.cards[0]);
-        card2 = createCard(this.cardsStack.deal.cards[1], 400);
+        function getDealPosition(num: number) {
+            let x = 0;
+            let y = 20 * num;
+            return {x, y};
+        }
 
-        card2.events.onDragStart.add(()=>{return false});
+        // let cards = [];
+        for (let i in this.cardsStack.deal.cards) {
+            // cards.push(createCard(this.cardsStack.deal.cards[i], getDealPosition(parseInt(i))));
+        }
+        card1 = createCard(this.cardsStack.deal.cards[0], getDealPosition(0));
+        card2 = createCard(this.cardsStack.deal.cards[1], {x: 400, y: 0});
+
+        let old: Phaser.Point;
+        card2.events.onDragStart.add(()=> {
+            card2.data.oldPosition = lodash.cloneDeep(card2.position);
+
+        });
+
+        card2.events.onDragStop.add(()=> {
+            card2.x = card2.data.oldPosition.x;
+            card2.y = card2.data.oldPosition.y;
+        });
 
         game.physics.arcade.overlap(card1, card2, (c1, c2)=> {
             console.log(c1);
         }, null, this);
 
         text = game.add.text(16, 500, 'Drag the sprites. Overlapping: false', {fill: '#ffffff'});
-
 
         /*
          this.game.physics.arcade.enable(card);
@@ -82,8 +99,8 @@ export class Solitaire {
     public start() {
         this.game = new Phaser.Game(800, 600, Phaser.AUTO, '', {
             preload: this.preload,
-            create: this.create,
-            update: this.update
+            create : this.create,
+            update : this.update
         });
 
     }

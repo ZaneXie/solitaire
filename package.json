@@ -11,8 +11,7 @@
   "dependencies": {
     "gulp": "^3.9.1",
     "gulp-typescript": "^2.13.6",
-    "lodash": "^4.15.0",
-    "phaser": "^2.6.2"
+    "lodash": "^4.15.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",
