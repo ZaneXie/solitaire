@@ -25,7 +25,7 @@ gulp.task('ts-src', ['clean-ts'], function () {
             module: "amd",
             sourceMap: false
         }));
-    return tsResult.js.pipe(gulp.dest("public/js/app"));
+    return tsResult.js.pipe(gulp.dest("public/js/app/src"));
 });
 gulp.task('ts-test', ['ts-src'], function () {
     var tsResult = gulp.src(["test/**/*.ts", "typings/index.d.ts", "src/**/*.d.ts"])
