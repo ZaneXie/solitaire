@@ -6,9 +6,11 @@ import {
     RecycleColumn,
 } from "./define";
 
-function canMove(from: Card, to: Card): boolean {
+function canMove(from:Card, to:Card):boolean {
+    console.log('try to move' + from.name + ' to ' + to.name);
     // 判断花色，不是相邻花色返回false。依赖CardType定义值
-    if (Math.abs(from.type - to.type) !== 1) {
+    let sub = Math.abs(from.type - to.type);
+    if (sub !== 1 && sub !== 3) {
         return false;
     }
     // 判断目标卡片是否比当前卡片大1
@@ -17,11 +19,11 @@ function canMove(from: Card, to: Card): boolean {
 
 export class CardsStack {
 
-    public deal: DealColumn;
-    public main: MainColumns;
-    public recycle: RecycleColumns;
+    public deal:DealColumn;
+    public main:MainColumns;
+    public recycle:RecycleColumns;
 
-    public numbers: number[];
+    public numbers:number[];
 
     public constructor() {
         this.deal = new DealColumn();
@@ -29,20 +31,20 @@ export class CardsStack {
         this.recycle = new RecycleColumns();
     }
 
-    public shuffle(numbers: number[] = null) {
+    public shuffle(numbers:number[] = null) {
         if (numbers === null) {
             numbers = this.getRandomNumbers();
         }
         this.numbers = numbers;
         let pos = 0;
         for (let i = 0; i < 24; i++) {
-            this.deal.cards.push(new Card(numbers[pos]));
+            this.deal.cards.push(new Card(numbers[pos], this.deal));
             pos++;
         }
 
-        function put(target: CardColumn, count: number) {
+        function put(target:CardColumn, count:number) {
             for (let i = 0; i < count; i++) {
-                target.cards.push(new Card(numbers[pos]));
+                target.cards.push(new Card(numbers[pos], target));
                 pos++;
             }
         }
@@ -57,15 +59,16 @@ export class CardsStack {
     }
 
     // 从from列的pos位置开始，移动到to下
-    public moveMainToMain(fromColumn: MainColumn, pos: number, toColumn: MainColumn): number {
+    public moveMainToMain(fromColumn:MainColumn, pos:number, toColumn:MainColumn):number {
         //@todo:单测
         let from = fromColumn.cards[pos];
         let to = toColumn.cards[0];
 
         if (canMove(from, to)) {
             let cards = fromColumn.cards.splice(0, pos + 1);
-            fromColumn.pos -= (pos + 1);
+            fromColumn.pos -= pos;
             for (let i = cards.length - 1; i >= 0; i--) {
+                cards[i].column = toColumn;
                 toColumn.cards.unshift(cards[i]);
             }
             toColumn.pos += (pos + 1);
@@ -74,25 +77,24 @@ export class CardsStack {
         return -1;
     }
 
-    public moveMainToRecycle(fromColumn: MainColumn, recycle: RecycleColumn = null): number {
+    public moveMainToRecycle(fromColumn:MainColumn, recycle:RecycleColumn = null):number {
         let card = fromColumn.cards[0];
         if (recycle == null) {
             recycle = this.recycle.getColumn(card.type);
         }
         if (recycle.doRecycle(card)) {
             fromColumn.cards.splice(0, 1);
-            fromColumn.pos--;
             return 0;
         }
         return -1;
     }
 
-    public moveDealToRecycle(recycle: RecycleColumn = null): number {
+    public moveDealToRecycle(recycle:RecycleColumn = null):number {
         if (this.deal.pos < 0) {
             return -1;
         }
         // 从deal取一张卡片
-        let card: Card = this.deal.cards[this.deal.pos];
+        let card:Card = this.deal.cards[this.deal.pos];
 
         // 如果没有设置目的地列，根据from卡牌选择
         if (recycle == null) {
@@ -108,13 +110,13 @@ export class CardsStack {
     }
 
     // 将发牌堆的第一张牌放置到目的列
-    public moveDealToMain(mainColumn: MainColumn): number {
+    public moveDealToMain(mainColumn:MainColumn):number {
         if (this.deal.pos < 0) {
             return -1;
         }
 
         // 从deal取一张卡片
-        let from: Card = this.deal.cards[this.deal.pos];
+        let from:Card = this.deal.cards[this.deal.pos];
 
         // 移动到空列
         if (mainColumn.cards.length == 0) {
@@ -122,7 +124,7 @@ export class CardsStack {
         }
 
         // 目的地卡片
-        let to: Card = mainColumn.cards[0];
+        let to:Card = mainColumn.cards[0];
 
         // 判断是否可移动
         if (!canMove(from, to)) {
@@ -134,16 +136,17 @@ export class CardsStack {
         this.deal.pos--;
 
         mainColumn.cards.unshift(from);
+        from.column = mainColumn;
         mainColumn.pos++;
 
         return this.deal.pos + 1;
     }
 
-    private getRandomNumbers(): number[] {
+    private getRandomNumbers():number[] {
         let ret = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52];
 
-        function swap(i: number, k: number) {
-            let tmp: number = ret[i];
+        function swap(i:number, k:number) {
+            let tmp:number = ret[i];
             ret[i] = ret[k];
             ret[k] = tmp;
         }

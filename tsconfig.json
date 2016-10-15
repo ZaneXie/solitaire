@@ -5,11 +5,12 @@
     "module": "amd",
     "rootDir": "./src",
     "outDir": "public/js/app",
-    "sourceMap": true,
+    "sourceMap": false,
     "declaration": true
   },
   "exclude": [
     "node_modules",
-    "bower_components"
+    "bower_components",
+    "public"
   ]
 }
