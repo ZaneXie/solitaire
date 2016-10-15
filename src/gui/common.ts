@@ -7,6 +7,6 @@ export interface Point {
     y:number;
 }
 
-export const scaleSize:number = 0.5;
+export const scaleSize:number = 1;
 export const cardWidth:number = 85;
 export const cardHeight:number = 120;

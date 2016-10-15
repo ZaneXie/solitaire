@@ -4,20 +4,25 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <script src="./js/lib/require.js"></script>
+    <script src="./js/app/src/main.js"></script>
     <script>
         requirejs.config({
             baseUrl: 'js/lib',
-            paths: {
-                app: '../app',
-            },
+//            paths: {
+//                app: '../app',
+//            },
             shim: {
                 phaser: {
                     exports: 'Phaser'
                 },
             }
         });
+        require(['gui/main'], function(main){
+            var game = new main.Solitaire();
+            game.start();
+        })
 
-        requirejs(['app/main']);
+//        requirejs(['app/main']);
     </script>
 </head>
 <body>

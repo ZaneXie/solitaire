@@ -24,14 +24,14 @@ export class RecycleGui {
     public create() {
         let c = (name:string, index:number) => {
             let pos = getRecyclePosition(index);
-            let card = this.solitaire.game.add.sprite(pos.x, pos.y, name);
+            let card = this.solitaire.game.add.sprite(pos.x, pos.y, 'poker', name);
             card.scale.setTo(scaleSize, scaleSize);
             this.cards[index] = card;
         }
-        c('poker.rec.diamond', CardType.Diamonds);
-        c('poker.rec.spade', CardType.Spades);
-        c('poker.rec.heart', CardType.Hearts);
-        c('poker.rec.club', CardType.Clubs);
+        c('rec_diamond.png', CardType.Diamonds);
+        c('rec_spade.png', CardType.Spades);
+        c('rec_heart.png', CardType.Hearts);
+        c('rec_club.png', CardType.Clubs);
     }
 
     public update() {

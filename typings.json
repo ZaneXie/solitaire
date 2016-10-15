@@ -11,5 +11,7 @@
     "phaser": "github:photonstorm/phaser/typescript/typings.json",
     "serve-static": "registry:dt/serve-static#0.0.0+20160606155157"
   },
-  "dependencies": {}
+  "dependencies": {
+    "through2": "registry:npm/through2#2.0.0+20160817101636"
+  }
 }

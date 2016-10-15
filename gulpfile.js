@@ -8,6 +8,7 @@ const del = require('del');
 const mainBowerFiles = require('main-bower-files');
 const webserver = require('gulp-webserver');
 const minify = require('gulp-minify');
+const dep = require('./tool/dep');
 
 gulp.task('clean-ts', function (cb) {
     del([
@@ -18,14 +19,31 @@ gulp.task('clean-ts', function (cb) {
         cb();
     });
 });
+gulp.task('ts-tool', function () {
+    var tsResult = gulp.src(['./tool/*.ts','typings/index.d.ts'])
+        .pipe(ts({
+            target: "es6",
+            module: "commonjs",
+        }));
+    return tsResult.js.pipe(gulp.dest('tool'))
+});
+gulp.task('compile-resource',['ts-tool'], function () {
+    gulp.src('public/images/cards/poker.src.json')
+        .pipe(dep.jsonCompressor())
+        .pipe(gulp.dest('public/images/cards'))
+});
 gulp.task('ts-src', ['clean-ts'], function () {
     var tsResult = gulp.src(["src/**/*.ts", "typings/index.d.ts"])
         .pipe(ts({
             target: "es6",
             module: "amd",
-            sourceMap: false
-        }));
-    return tsResult.js.pipe(gulp.dest("public/js/app/src"));
+            sourceMap: false,
+            out: 'main.js',
+        }))
+        ;
+    return tsResult.js
+        // .pipe(minify())
+        .pipe(gulp.dest("public/js/app/src"));
 });
 gulp.task('ts-test', ['ts-src'], function () {
     var tsResult = gulp.src(["test/**/*.ts", "typings/index.d.ts", "src/**/*.d.ts"])

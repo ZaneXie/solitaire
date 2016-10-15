@@ -26,7 +26,7 @@ export class DealGui {
     public create() {
         this.deal = this.solitaire.cardsStack.deal;
         let pos = getDealPosition(0);
-        this.background = this.solitaire.game.add.sprite(pos.x, pos.y, 'poker.background');
+        this.background = this.solitaire.game.add.sprite(pos.x, pos.y, 'poker','card_back.png');
         this.background.scale.setTo(scaleSize, scaleSize);
         this.background.inputEnabled = true;
         this.background.events.onInputDown.add(()=> {

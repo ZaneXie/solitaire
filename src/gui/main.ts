@@ -57,22 +57,17 @@ export class Solitaire {
 
     preload() {
         this.game.load.atlasJSONHash('poker', 'images/cards/poker.png', 'images/cards/poker.json');
-        this.game.load.image('poker.background', 'images/cards/back.png');
-        this.game.load.image('poker.rec.diamond', 'images/cards/rec_diamond.png');
-        this.game.load.image('poker.rec.heart', 'images/cards/rec_heart.png');
-        this.game.load.image('poker.rec.club', 'images/cards/rec_club.png');
-        this.game.load.image('poker.rec.spade', 'images/cards/rec_spade.png');
     }
 
 
     public createCard(card:Card, pos:{x:number, y:number} = {x: 0, y: 0}):CardGui {
-        let ret:CardGui = this.game.add.sprite(pos.x, pos.y, 'poker.background');//, card.getImageName());
+        let ret:CardGui = this.game.add.sprite(pos.x, pos.y, 'poker','card_back.png');//, card.getImageName());
         ret.data.card = card;
         ret.scale.setTo(scaleSize, scaleSize);
         ret.inputEnabled = true;
         ret.input.enableDrag();
         ret.data.turnToBack = ()=> {
-            ret.loadTexture('poker.background');
+            ret.loadTexture('poker','card_back.png');
         };
         ret.data.turnToFront = ()=> {
             ret.loadTexture('poker', card.getImageName());
