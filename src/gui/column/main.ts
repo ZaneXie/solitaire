@@ -54,7 +54,7 @@ export class MainGui {
         let index = column.cards.indexOf(card);
         for (let i = index - 1; i >= 0; i--) {
             column.cards[i].sprite.x = cardGui.x;
-            column.cards[i].sprite.y = cardGui.y + 20 * (i + 1);
+            column.cards[i].sprite.y = cardGui.y + 20 * (index - i);
             this.solitaire.game.world.bringToTop(column.cards[i].sprite);
         }
     }
