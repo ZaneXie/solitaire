@@ -6,13 +6,13 @@ import {Solitaire, CardGui, checkOverlap} from "../main";
 import {Point, cardWidth} from "../common";
 import {DealColumn, MainColumns, MainColumn, Card} from "../../core/define";
 import lodash = require('lodash');
-function getPosition(column:number, row:number) {
+function getPosition(column: number, row: number) {
     let x = 30 + (cardWidth + 10) * column;
     let y = 20 * row;
     return {x, y}
 }
 
-function syncColumnGui(cardGui:CardGui) {
+function syncColumnGui(cardGui: CardGui) {
     let card = cardGui.data.card;
     let column = cardGui.data.card.column;
     let index = column.cards.indexOf(card);
@@ -22,11 +22,27 @@ function syncColumnGui(cardGui:CardGui) {
     }
 }
 
-export class MainGui {
-    private solitaire:Solitaire;
-    private mainColumns:MainColumns;
+function syncDraggable(column: MainColumn) {
+    let i = column.cards.length - 1;
+    for (; i > column.pos; i--) {
+        let cardGui = column.cards[i].sprite;
+        cardGui.input.disableDrag();
+    }
+    for (; i >= 0; i--) {
+        column.cards[i].sprite.input.enableDrag();
+    }
+}
 
-    public constructor(solitaire:Solitaire) {
+function calcMainColumnBounds(mainColumn: MainColumn): Phaser.Rectangle {
+    let ret: any = mainColumn.cards[mainColumn.pos].sprite.getBounds();
+    console.log(ret);
+    return ret;
+}
+export class MainGui {
+    private solitaire: Solitaire;
+    private mainColumns: MainColumns;
+
+    public constructor(solitaire: Solitaire) {
         this.solitaire = solitaire;
     }
 
@@ -34,7 +50,7 @@ export class MainGui {
     public create() {
         this.mainColumns = this.solitaire.cardsStack.main;
 
-        let createColumn = (column:MainColumn, index:number) => {
+        let createColumn = (column: MainColumn, index: number) => {
             let size = column.cards.length;
             for (let i = size - 1; i >= 0; i--) {
                 let card = this.solitaire.createCard(column.cards[i], getPosition(index, size - 1 - i));
@@ -44,6 +60,7 @@ export class MainGui {
                 }
                 this.makeCardToMainCard(card);
             }
+            syncDraggable(column);
         }
 
         createColumn(this.mainColumns.One, 1);
@@ -55,11 +72,37 @@ export class MainGui {
         createColumn(this.mainColumns.Seven, 7);
     }
 
-    public onDragStop(cardGui:CardGui) {
+    public checkOverlap(cardGui: CardGui, cb: (column: MainColumn)=>any) {
+        let cardBounds: any = cardGui.getBounds();
+        let func = (column: MainColumn)=> {
+            let bound = calcMainColumnBounds(column);
+            if (Phaser.Rectangle.intersects(bound, cardBounds)) {
+                cb(column);
+            }
+        }
+
+        func(this.mainColumns.One);
+        func(this.mainColumns.Two);
+        func(this.mainColumns.Three);
+        func(this.mainColumns.Four);
+        func(this.mainColumns.Five);
+        func(this.mainColumns.Six);
+        func(this.mainColumns.Seven);
+    }
+
+    public onDragStop(cardGui: CardGui) {
         let found = false;
         let card = cardGui.data.card;
         let pos = card.column.cards.indexOf(card);
-        this.solitaire.cardsStack.main.eachCard((c:Card)=> {
+
+        let doWhenMoveOut = (column: MainColumn) => {
+            if (column.pos >= 0) {
+                column.cards[column.pos].sprite.data.turnToFront();
+            } else {
+
+            }
+        }
+        this.solitaire.cardsStack.main.eachCard((c: Card)=> {
             if (!found && checkOverlap(cardGui, c.sprite)) {
                 let originColumn = <MainColumn>card.column;
                 let targetColumn = <MainColumn>c.column;
@@ -74,7 +117,10 @@ export class MainGui {
                     found = true;
                     cardGui.x = x;
                     cardGui.y = y + 20;
-                    originColumn.cards[originColumn.pos].sprite.data.turnToFront();
+
+                    doWhenMoveOut(originColumn);
+                    syncDraggable(originColumn);
+                    syncDraggable(targetColumn);
                 }
             }
         });
@@ -83,14 +129,17 @@ export class MainGui {
             lodash.each(this.solitaire.recycleGui.cards, (c, index)=> {
                 if (!found && checkOverlap(cardGui, c)) {
                     let targetColumn = this.solitaire.cardsStack.recycle.columns[index];
-                    let fromColumn = <MainColumn>cardGui.data.card.column;
-                    if (this.solitaire.cardsStack.moveMainToRecycle(fromColumn, targetColumn) > -1) {
+                    let originColumn = <MainColumn>cardGui.data.card.column;
+                    if (this.solitaire.cardsStack.moveMainToRecycle(originColumn, targetColumn) > -1) {
                         found = true;
                         cardGui.x = c.x;
                         cardGui.y = c.y;
                         cardGui.data.card.column = targetColumn;
+                        cardGui.input.disableDrag();
                         this.solitaire.game.world.bringToTop(cardGui);
-                        fromColumn.cards[fromColumn.pos].sprite.data.turnToFront();
+                        doWhenMoveOut(originColumn);
+                        this.clearMainCard(cardGui);
+                        syncDraggable(originColumn);
                     }
                 }
             });
@@ -102,21 +151,21 @@ export class MainGui {
         syncColumnGui(cardGui);
     }
 
-    public onDragStart(card:CardGui) {
-        card.data.recordOldPos();
+    public onDragStart(cardGui: CardGui) {
+        cardGui.data.recordPosition();
     }
 
-    public onDragUpdate(cardGui:CardGui) {
+    public onDragUpdate(cardGui: CardGui) {
         syncColumnGui(cardGui);
     }
 
-    public makeCardToMainCard(card:CardGui) {
+    public makeCardToMainCard(card: CardGui) {
         card.events.onDragStart.add(this.onDragStart, this);
         card.events.onDragUpdate.add(this.onDragUpdate, this);
         card.events.onDragStop.add(this.onDragStop, this);
     }
 
-    public clearMainCard(card:CardGui) {
+    public clearMainCard(card: CardGui) {
         card.events.onDragStart.remove(this.onDragStart, this);
         card.events.onDragUpdate.remove(this.onDragUpdate, this);
         card.events.onDragStop.remove(this.onDragStop, this);

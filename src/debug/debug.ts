@@ -2,7 +2,7 @@
  * Created by xiezongjun on 2016-09-06.
  */
 
-import {CardColumn, Card, CardType} from "../core/define";
+import {CardColumn, Card, CardType, DealColumn, RecycleColumn, MainColumn} from "../core/define";
 import {CardsStack} from "../core/core";
 
 export function printStackNumbers(stack: CardsStack) {
@@ -10,13 +10,16 @@ export function printStackNumbers(stack: CardsStack) {
 }
 export function printStack(stack: CardsStack,
                            cb: (card: Card) =>string = (card: Card)=>card.name) {
-    function getColumnString(column: CardColumn) {
+
+    function getColumnString(column: DealColumn|MainColumn|RecycleColumn) {
         let numbers = [];
         for (let card of column.cards) {
             numbers.push(cb(card));
         }
 
-        return numbers.join(',');
+        let ret = numbers.join(',');
+
+        return ret + "," + column.pos;
     }
 
     function logSeparator() {

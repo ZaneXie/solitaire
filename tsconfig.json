@@ -3,11 +3,14 @@
   "compilerOptions": {
     "target": "es6",
     "module": "amd",
-//    "rootDir": "./src",
     "outDir": "public/js/app",
     "sourceMap": true,
-    "declaration": true
+    "declaration": false
   },
+  "include":[
+    "src/**/*",
+    "typings/index.d.ts"
+  ],
   "exclude": [
     "node_modules",
     "bower_components",

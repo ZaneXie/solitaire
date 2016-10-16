@@ -41,7 +41,7 @@ export class DealGui {
     }
 
     public onDragStart(card:CardGui) {
-        card.data.recordOldPos();
+        card.data.recordPosition();
     }
 
     public onDragStop(cardGui:CardGui) {
@@ -72,7 +72,9 @@ export class DealGui {
                         cardGui.x = c.x;
                         cardGui.y = c.y;
                         cardGui.data.card.column = targetColumn;
+                        cardGui.input.disableDrag();
                         this.solitaire.game.world.bringToTop(cardGui);
+                        this.clearDealCard(cardGui);
                     }
                 }
             });
@@ -108,16 +110,5 @@ export class DealGui {
     }
 
     public update() {
-        /*
-         for (let i in this.deal.cards) {
-         this.deal.cards[i].sprite.visible = false;
-         }
-         let pos = getDealPosition(1);
-         console.log(pos);
-         console.log(this.deal);
-         this.deal.cards[this.deal.pos].sprite.x = pos.x;
-         this.deal.cards[this.deal.pos].sprite.y = pos.y;
-         this.deal.cards[this.deal.pos].sprite.visible = true;
-         */
     }
 }

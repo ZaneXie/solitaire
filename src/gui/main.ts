@@ -38,7 +38,7 @@ export class CardGui extends Phaser.Sprite {
         turnToBack:()=>void;
         turnToFront:()=>void;
         moveBack:()=>void;
-        recordOldPos:()=>void;
+        recordPosition:()=>void;
     };
 }
 
@@ -57,8 +57,8 @@ export class Solitaire {
     }
 
     preload() {
-        // this.game.load.atlasJSONHash('poker', 'images/cards/cards.png', 'images/cards/cards.json');
         this.game.load.atlasJSONHash('poker', 'images/cards.png', null, cardsTexture);
+        this.game.load.image('poker.empty.png', 'images/cards/empty.png');
     }
 
 
@@ -78,7 +78,7 @@ export class Solitaire {
             ret.x = ret.data.oldPos.x;
             ret.y = ret.data.oldPos.y;
         };
-        ret.data.recordOldPos = ()=> {
+        ret.data.recordPosition = ()=> {
             ret.data.oldPos = {
                 x: ret.x,
                 y: ret.y,
