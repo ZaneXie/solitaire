@@ -3,9 +3,9 @@
   "compilerOptions": {
     "target": "es6",
     "module": "amd",
-    "rootDir": "./src",
+//    "rootDir": "./src",
     "outDir": "public/js/app",
-    "sourceMap": false,
+    "sourceMap": true,
     "declaration": true
   },
   "exclude": [

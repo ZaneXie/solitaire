@@ -1,0 +1,12 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "target": "es5",
+    "sourceMap": false,
+    "declaration": false
+  },
+  "files": [
+    "gulpfile.ts",
+    "typings/index.d.ts"
+  ]
+}

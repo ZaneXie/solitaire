@@ -9,6 +9,7 @@ const mainBowerFiles = require('main-bower-files');
 const webserver = require('gulp-webserver');
 const minify = require('gulp-minify');
 const dep = require('./tool/dep');
+const path = require('path');
 
 gulp.task('clean-ts', function (cb) {
     del([
@@ -20,21 +21,22 @@ gulp.task('clean-ts', function (cb) {
     });
 });
 gulp.task('ts-tool', function () {
-    var tsResult = gulp.src(['./tool/*.ts','typings/index.d.ts'])
+    var tsResult = gulp.src(['./tool/*.ts', 'typings/index.d.ts'])
         .pipe(ts({
             target: "es6",
             module: "commonjs",
         }));
     return tsResult.js.pipe(gulp.dest('tool'))
 });
-gulp.task('compile-resource',['ts-tool'], function () {
-    gulp.src('public/images/cards/poker.src.json')
+gulp.task('compile-resource', function () {
+    gulp.src('public/images/cards/poker.json')
         .pipe(dep.jsonCompressor())
         .pipe(gulp.dest('public/images/cards'))
 });
 gulp.task('ts-src', ['clean-ts'], function () {
     var tsResult = gulp.src(["src/**/*.ts", "typings/index.d.ts"])
         .pipe(ts({
+            baseUrl: './',
             target: "es6",
             module: "amd",
             sourceMap: false,
@@ -66,9 +68,24 @@ gulp.task("bower-files", function () {
 });
 
 gulp.task('webserver', function () {
-    gulp.src('./public')
+    gulp.src('./')
         .pipe(webserver({
-            livereload: true,
+            livereload: {
+                enable: true,
+                filter: function (filename) {
+                    var relative = path.relative(__dirname, filename);
+                    // if (relative.startsWith('public') && path.extname(relative) === '.js') {
+                     if (relative.startsWith('public')) {
+                         console.log(relative);
+                         console.log(path.extname(relative) === '.js');
+                         // if(path.extname(relative) === '.js'){
+                         //     console.log(relative);
+                             // return true;
+                         // }
+                    }
+                    return false;
+                }
+            },
             // directoryListing: true,
         }));
 });

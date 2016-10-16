@@ -1,17 +1,21 @@
 {
   "globalDependencies": {
+    "browser-sync": "registry:dt/browser-sync#0.0.0+20160928124223",
     "chai": "registry:dt/chai#3.4.0+20160601211834",
-    "express": "registry:dt/express#4.0.0+20160708185218",
-    "express-serve-static-core": "registry:dt/express-serve-static-core#4.0.0+20160829034835",
-    "lodash": "registry:dt/lodash#4.14.0+20160830145422",
-    "log4js": "registry:dt/log4js#0.0.0+20160608042355",
+    "gulp-typescript": "registry:dt/gulp-typescript#0.0.0+20160317120654",
+    "lodash": "registry:dt/lodash#4.14.0+20161004174455",
+    "main-bower-files": "registry:dt/main-bower-files#0.0.0+20160316155526",
+    "micromatch": "registry:dt/micromatch#2.3.7+20160123140905",
     "mime": "registry:dt/mime#0.0.0+20160316155526",
     "mocha": "registry:dt/mocha#2.2.5+20160720003353",
-    "node": "registry:dt/node#6.0.0+20160831021119",
-    "phaser": "github:photonstorm/phaser/typescript/typings.json",
-    "serve-static": "registry:dt/serve-static#0.0.0+20160606155157"
+    "node": "registry:env/node#6.0.0+20161015001438",
+    "parse-glob": "registry:dt/parse-glob#3.0.4+20160110125512",
+    "phaser": "file:bower_components\\phaser\\typescript\\typings.json"
   },
   "dependencies": {
+    "chokidar": "registry:npm/chokidar#1.6.0+20160817083815",
+    "del": "registry:npm/del#2.2.0+20160416211512",
+    "gulp": "registry:npm/gulp#3.9.1+20160817105618",
     "through2": "registry:npm/through2#2.0.0+20160817101636"
   }
 }

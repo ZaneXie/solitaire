@@ -4,22 +4,22 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "create-gulp-file": "node node_modules\\typescript\\bin\\tsc -p tsconfig.gulpfile.json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "gulp": "^3.9.1",
-    "gulp-typescript": "^2.13.6",
     "lodash": "^4.15.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",
     "del": "^2.2.2",
     "gulp-minify": "^0.0.14",
-    "gulp-webserver": "^0.9.1",
+    "gulp-typescript": "^3.0.2",
     "main-bower-files": "^2.13.1",
     "through2": "^2.0.1",
-    "ts-node": "^1.3.0"
+    "typescript": "^2.0.3"
   }
 }

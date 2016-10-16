@@ -12,6 +12,7 @@ import {Point, scaleSize} from "./common";
 import {MainGui} from "./column/main";
 import {printStack} from "../debug/debug";
 import {RecycleGui} from "./column/recycle";
+import {cardsTexture} from "./resource/texture";
 
 export function checkOverlap(spriteA:Phaser.Sprite, spriteB:Phaser.Sprite):boolean {
     if (spriteA === spriteB) {
@@ -56,7 +57,8 @@ export class Solitaire {
     }
 
     preload() {
-        this.game.load.atlasJSONHash('poker', 'images/cards/poker.png', 'images/cards/poker.json');
+        // this.game.load.atlasJSONHash('poker', 'images/cards/cards.png', 'images/cards/cards.json');
+        this.game.load.atlasJSONHash('poker', 'images/cards.png', null, cardsTexture);
     }
 
 

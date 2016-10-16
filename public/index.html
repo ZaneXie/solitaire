@@ -7,10 +7,11 @@
     <script src="./js/app/src/main.js"></script>
     <script>
         requirejs.config({
-            baseUrl: 'js/lib',
-//            paths: {
-//                app: '../app',
-//            },
+            baseUrl: 'js/app/src',
+            paths: {
+                lodash: '../../lib/lodash',
+                phaser: '../../lib/phaser',
+            },
             shim: {
                 phaser: {
                     exports: 'Phaser'
@@ -22,7 +23,6 @@
             game.start();
         })
 
-//        requirejs(['app/main']);
     </script>
 </head>
 <body>
