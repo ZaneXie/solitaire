@@ -8,19 +8,19 @@ import Game = Phaser.Game;
 import {Card} from "../core/define";
 import lodash = require("lodash");
 import {DealGui} from "./column/deal";
-import {Point, scaleSize} from "./common";
+import {Point, scaleSize, LabelButton} from "./common";
 import {MainGui} from "./column/main";
-import {printStack} from "../debug/debug";
+import {printStack, printStackNumbers} from "../debug/debug";
 import {RecycleGui} from "./column/recycle";
 import {cardsTexture} from "./resource/texture";
 
-export function checkOverlap(spriteA:Phaser.Sprite, spriteB:Phaser.Sprite):boolean {
+export function checkOverlap(spriteA: Phaser.Sprite, spriteB: Phaser.Sprite): boolean {
     if (spriteA === spriteB) {
         return false;
     }
 
-    let boundsA:any = spriteA.getBounds();
-    let boundsB:any = spriteB.getBounds();
+    let boundsA: any = spriteA.getBounds();
+    let boundsB: any = spriteB.getBounds();
 
     return Phaser.Rectangle.intersects(boundsA, boundsB);
 
@@ -28,27 +28,28 @@ export function checkOverlap(spriteA:Phaser.Sprite, spriteB:Phaser.Sprite):boole
 
 // let card1: Phaser.Sprite, card2: Phaser.Sprite;
 let text;
-let cards:Phaser.Sprite[] = [];
+let cards: Phaser.Sprite[] = [];
 
 
 export class CardGui extends Phaser.Sprite {
-    data:{
-        card:Card;
-        oldPos:{x:number,y:number};
-        turnToBack:()=>void;
-        turnToFront:()=>void;
-        moveBack:()=>void;
-        recordPosition:()=>void;
+    data: {
+        card: Card;
+        oldPos: {x: number,y: number};
+        turnToBack: ()=>void;
+        turnToFront: ()=>void;
+        moveBack: ()=>void;
+        recordPosition: ()=>void;
     };
 }
 
 export class Solitaire {
 
-    public game:Game;
-    public cardsStack:CardsStack;
-    public dealGui:DealGui;
-    public mainGui:MainGui;
-    public recycleGui:RecycleGui;
+    public game: Game;
+    public cardsStack: CardsStack;
+    public dealGui: DealGui;
+    public mainGui: MainGui;
+    public recycleGui: RecycleGui;
+    public numbers:number[] = null;
 
     public constructor() {
         this.dealGui = new DealGui(this);
@@ -62,14 +63,17 @@ export class Solitaire {
     }
 
 
-    public createCard(card:Card, pos:{x:number, y:number} = {x: 0, y: 0}):CardGui {
-        let ret:CardGui = this.game.add.sprite(pos.x, pos.y, 'poker','card_back.png');//, card.getImageName());
+    public createCard(card: Card, pos: {x: number, y: number} = {x: 0, y: 0}): CardGui {
+        let ret: CardGui = this.game.add.sprite(pos.x, pos.y, 'poker', 'card_back.png');//, card.getImageName());
         ret.data.card = card;
         ret.scale.setTo(scaleSize, scaleSize);
         ret.inputEnabled = true;
         ret.input.enableDrag();
+        ret.events.onInputDown.add(()=> {
+            console.log(ret.getBounds());
+        })
         ret.data.turnToBack = ()=> {
-            ret.loadTexture('poker','card_back.png');
+            ret.loadTexture('poker', 'card_back.png');
         };
         ret.data.turnToFront = ()=> {
             ret.loadTexture('poker', card.getImageName());
@@ -91,12 +95,22 @@ export class Solitaire {
         const that = this;
         let game = this.game;
         this.cardsStack = new CardsStack();
-        this.cardsStack.shuffle();
+        this.cardsStack.shuffle(this.numbers);
 
+        let button1 = new LabelButton(this.game, 400, 500, 'poker.empty.png', '读取记录', ()=> {
+            let string = window.localStorage.getItem('old');
+            this.numbers = JSON.parse(string);
+            this.game.destroy();
+            this.start();
+        }, this, 1, 0, 2);
+
+        game.add.button(200, 500, 'button', ()=> {
+            let string = JSON.stringify(this.cardsStack.numbers);
+            window.localStorage.setItem('old', string)
+        }, this);
         game.add.button(0, 500, 'button', ()=> {
             printStack(this.cardsStack)
         }, this);
-
         this.dealGui.create();
         this.mainGui.create();
         this.recycleGui.create();
@@ -105,7 +119,6 @@ export class Solitaire {
         // card1 = createCard(this.cardsStack.deal.cards[0], getDealPosition(0));
         // card2 = createCard(this.cardsStack.deal.cards[1], {x: 400, y: 0});
 
-        let old:Phaser.Point;
         // card2.events.onDragStart.add(()=> {
         //     card2.data.oldPosition = lodash.cloneDeep(card2.position);
         //

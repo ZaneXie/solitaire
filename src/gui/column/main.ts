@@ -3,24 +3,16 @@
  */
 
 import {Solitaire, CardGui, checkOverlap} from "../main";
-import {Point, cardWidth} from "../common";
+import {Point, cardWidth, cardHeight} from "../common";
 import {DealColumn, MainColumns, MainColumn, Card} from "../../core/define";
 import lodash = require('lodash');
-function getPosition(column: number, row: number) {
+import {printStack} from "../../debug/debug";
+function getPosition(column: number, row: number): Point {
     let x = 30 + (cardWidth + 10) * column;
     let y = 20 * row;
     return {x, y}
 }
 
-function syncColumnGui(cardGui: CardGui) {
-    let card = cardGui.data.card;
-    let column = cardGui.data.card.column;
-    let index = column.cards.indexOf(card);
-    for (let i = 0; i < index; i++) {
-        column.cards[i].sprite.x = cardGui.x;
-        column.cards[i].sprite.y = cardGui.y + 20 * (i + 1);
-    }
-}
 
 function syncDraggable(column: MainColumn) {
     let i = column.cards.length - 1;
@@ -33,10 +25,15 @@ function syncDraggable(column: MainColumn) {
     }
 }
 
-function calcMainColumnBounds(mainColumn: MainColumn): Phaser.Rectangle {
-    let ret: any = mainColumn.cards[mainColumn.pos].sprite.getBounds();
-    console.log(ret);
-    return ret;
+function calcMainColumnBounds(mainColumn: MainColumn, index: number): Phaser.Rectangle {
+    if (mainColumn.pos >= 0) {
+        let ret: any = mainColumn.cards[mainColumn.pos].sprite.getBounds();
+        return ret;
+    } else {
+        // @todo: 放置一张真实卡背，须与实际卡片大小相同
+        let pos = getPosition(index, 0);
+        return new Phaser.Rectangle(pos.x, pos.y, cardWidth, cardHeight);
+    }
 }
 export class MainGui {
     private solitaire: Solitaire;
@@ -46,6 +43,21 @@ export class MainGui {
         this.solitaire = solitaire;
     }
 
+
+    public syncColumnGui(cardGui: CardGui) {
+        let card = cardGui.data.card;
+        let column = cardGui.data.card.column;
+        // 只同步主列的样式
+        if (!(column instanceof MainColumn)) {
+            return;
+        }
+        let index = column.cards.indexOf(card);
+        for (let i = index - 1; i >= 0; i--) {
+            column.cards[i].sprite.x = cardGui.x;
+            column.cards[i].sprite.y = cardGui.y + 20 * (i + 1);
+            this.solitaire.game.world.bringToTop(column.cards[i].sprite);
+        }
+    }
 
     public create() {
         this.mainColumns = this.solitaire.cardsStack.main;
@@ -72,22 +84,27 @@ export class MainGui {
         createColumn(this.mainColumns.Seven, 7);
     }
 
-    public checkOverlap(cardGui: CardGui, cb: (column: MainColumn)=>any) {
+    public checkOverlap(cardGui: CardGui, cb: (column: MainColumn, index?:number)=>any) {
+        let found = false;
         let cardBounds: any = cardGui.getBounds();
-        let func = (column: MainColumn)=> {
-            let bound = calcMainColumnBounds(column);
+        let func = (column: MainColumn, index: number)=> {
+            if (found || cardGui.data.card.column === column) {
+                return;
+            }
+            let bound = calcMainColumnBounds(column, index);
             if (Phaser.Rectangle.intersects(bound, cardBounds)) {
-                cb(column);
+                found = true;
+                cb(column, index);
             }
         }
 
-        func(this.mainColumns.One);
-        func(this.mainColumns.Two);
-        func(this.mainColumns.Three);
-        func(this.mainColumns.Four);
-        func(this.mainColumns.Five);
-        func(this.mainColumns.Six);
-        func(this.mainColumns.Seven);
+        func(this.mainColumns.One, 1);
+        func(this.mainColumns.Two, 2);
+        func(this.mainColumns.Three, 3);
+        func(this.mainColumns.Four, 4);
+        func(this.mainColumns.Five, 5);
+        func(this.mainColumns.Six, 6);
+        func(this.mainColumns.Seven, 7);
     }
 
     public onDragStop(cardGui: CardGui) {
@@ -97,33 +114,44 @@ export class MainGui {
 
         let doWhenMoveOut = (column: MainColumn) => {
             if (column.pos >= 0) {
+                console.log(column.pos);
+                console.log(column.cards);
+                console.log(column.cards[column.pos]);
+                console.log(!column.cards[column.pos]);
+                if (!column.cards[column.pos]) {
+                    printStack(this.solitaire.cardsStack);
+                }
                 column.cards[column.pos].sprite.data.turnToFront();
             } else {
 
             }
         }
-        this.solitaire.cardsStack.main.eachCard((c: Card)=> {
-            if (!found && checkOverlap(cardGui, c.sprite)) {
-                let originColumn = <MainColumn>card.column;
-                let targetColumn = <MainColumn>c.column;
-                if (originColumn === targetColumn) {
-                    return;
-                }
-                let moveCount = this.solitaire.cardsStack.moveMainToMain(originColumn, pos, targetColumn);
-                if (moveCount > -1) {
-                    let x = targetColumn.cards[moveCount].sprite.x;
-                    let y = targetColumn.cards[moveCount].sprite.y;
-                    this.solitaire.game.world.bringToTop(cardGui);
-                    found = true;
-                    cardGui.x = x;
-                    cardGui.y = y + 20;
-
-                    doWhenMoveOut(originColumn);
-                    syncDraggable(originColumn);
-                    syncDraggable(targetColumn);
-                }
+        this.checkOverlap(cardGui, (targetColumn: MainColumn, index:number)=> {
+            let originColumn = <MainColumn>card.column;
+            if (originColumn === targetColumn) {
+                return;
             }
-        });
+            let moveCount = this.solitaire.cardsStack.moveMainToMain(originColumn, pos, targetColumn);
+            if (moveCount > -1) {
+                found = true;
+                let x, y;
+                if (moveCount > targetColumn.cards.length - 1) {
+                    let pos = getPosition(index, 0);
+                    x = pos.x;
+                    y = pos.y;
+                } else {
+                    x = targetColumn.cards[moveCount].sprite.x;
+                    y = targetColumn.cards[moveCount].sprite.y + 20;
+                }
+                cardGui.x = x;
+                cardGui.y = y;
+                this.solitaire.game.world.bringToTop(cardGui);
+
+                doWhenMoveOut(originColumn);
+                syncDraggable(originColumn);
+                syncDraggable(targetColumn);
+            }
+        })
         // 检查是否移动到回收列
         if (!found) {
             lodash.each(this.solitaire.recycleGui.cards, (c, index)=> {
@@ -148,7 +176,7 @@ export class MainGui {
         if (!found) {
             cardGui.data.moveBack();
         }
-        syncColumnGui(cardGui);
+        this.syncColumnGui(cardGui);
     }
 
     public onDragStart(cardGui: CardGui) {
@@ -156,7 +184,7 @@ export class MainGui {
     }
 
     public onDragUpdate(cardGui: CardGui) {
-        syncColumnGui(cardGui);
+        this.syncColumnGui(cardGui);
     }
 
     public makeCardToMainCard(card: CardGui) {

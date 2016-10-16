@@ -7,7 +7,7 @@ import {scaleSize} from "../common";
 
 import lodash = require('lodash');
 
-function getDealPosition(num:number) {
+function getDealPosition(num: number) {
     let x = 0;
     let y = 20 * num;
     return {x, y};
@@ -15,18 +15,18 @@ function getDealPosition(num:number) {
 
 export class DealGui {
 
-    public solitaire:Solitaire;
-    private deal:DealColumn;
-    private background:Phaser.Sprite;
+    public solitaire: Solitaire;
+    private deal: DealColumn;
+    private background: Phaser.Sprite;
 
-    public constructor(solitaire:Solitaire) {
+    public constructor(solitaire: Solitaire) {
         this.solitaire = solitaire;
     }
 
     public create() {
         this.deal = this.solitaire.cardsStack.deal;
         let pos = getDealPosition(0);
-        this.background = this.solitaire.game.add.sprite(pos.x, pos.y, 'poker','card_back.png');
+        this.background = this.solitaire.game.add.sprite(pos.x, pos.y, 'poker', 'card_back.png');
         this.background.scale.setTo(scaleSize, scaleSize);
         this.background.inputEnabled = true;
         this.background.events.onInputDown.add(()=> {
@@ -40,34 +40,31 @@ export class DealGui {
         }
     }
 
-    public onDragStart(card:CardGui) {
+    public onDragStart(card: CardGui) {
         card.data.recordPosition();
     }
 
-    public onDragStop(cardGui:CardGui) {
+    public onDragStop(cardGui: CardGui) {
         let found = false;
         // 检查是否移动到主列
-        this.solitaire.cardsStack.main.eachCard((c:Card)=> {
-            if (!found && checkOverlap(cardGui, c.sprite)) {
-                let targetColumn = <MainColumn>c.column;
-                if (this.solitaire.cardsStack.moveDealToMain(targetColumn) > -1) {
-                    let x = targetColumn.cards[1].sprite.x;
-                    let y = targetColumn.cards[1].sprite.y;
-                    found = true;
-                    this.clearDealCard(cardGui);
-                    cardGui.x = x;
-                    cardGui.y = y + 20;
-                    this.solitaire.mainGui.makeCardToMainCard(cardGui);
-                    this.solitaire.game.world.bringToTop(cardGui);
-                }
+        this.solitaire.mainGui.checkOverlap(cardGui, (targetColumn: MainColumn)=> {
+            if (this.solitaire.cardsStack.moveDealToMain(targetColumn) > -1) {
+                let x = targetColumn.cards[1].sprite.x;
+                let y = targetColumn.cards[1].sprite.y;
+                found = true;
+                this.clearDealCard(cardGui);
+                cardGui.x = x;
+                cardGui.y = y + 20;
+                this.solitaire.mainGui.makeCardToMainCard(cardGui);
+                this.solitaire.game.world.bringToTop(cardGui);
             }
-        });
+        })
         // 检查是否移动到回收列
         if (!found) {
             lodash.each(this.solitaire.recycleGui.cards, (c, index)=> {
                 if (!found && checkOverlap(cardGui, c)) {
                     let targetColumn = this.solitaire.cardsStack.recycle.columns[index];
-                    if(this.solitaire.cardsStack.moveDealToRecycle(targetColumn) > -1){
+                    if (this.solitaire.cardsStack.moveDealToRecycle(targetColumn) > -1) {
                         found = true;
                         cardGui.x = c.x;
                         cardGui.y = c.y;
@@ -84,12 +81,12 @@ export class DealGui {
         }
     }
 
-    public clearDealCard(card:CardGui) {
+    public clearDealCard(card: CardGui) {
         card.events.onDragStart.remove(this.onDragStart, this);
         card.events.onDragStop.remove(this.onDragStop, this);
     }
 
-    public makeCardToDealCard(card:CardGui) {
+    public makeCardToDealCard(card: CardGui) {
         card.events.onDragStart.add(this.onDragStart, this);
         card.events.onDragStop.add(this.onDragStop, this);
     }

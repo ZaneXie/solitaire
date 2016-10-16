@@ -7,6 +7,9 @@ import {
 } from "./define";
 
 function canMove(from: Card, to: Card): boolean {
+    if (!from || !to) {
+        return false;
+    }
     console.log('try to move' + from.name + ' to ' + to.name);
     // 判断花色，不是相邻花色返回false。依赖CardType定义值
     let sub = Math.abs(from.type - to.type);
@@ -65,8 +68,12 @@ export class CardsStack {
         let from = fromColumn.cards[pos];
 
         let canDo = false;
-        if (toColumn.pos < 0 && from.number == 13) {
-            canDo = true;
+        if (toColumn.pos < 0) {
+            if (from.number == 13) {
+                canDo = true;
+            } else {
+                canDo = false;
+            }
         } else {
             let to = toColumn.cards[0];
             canDo = canMove(from, to);
@@ -75,6 +82,9 @@ export class CardsStack {
         if (canDo) {
             let cards = fromColumn.cards.splice(0, pos + 1);
             fromColumn.pos -= pos;
+            if (fromColumn.cards.length == 0) {
+                fromColumn.pos = -1;
+            }
             for (let i = cards.length - 1; i >= 0; i--) {
                 cards[i].column = toColumn;
                 toColumn.cards.unshift(cards[i]);
@@ -92,6 +102,9 @@ export class CardsStack {
         }
         if (recycle.doRecycle(card)) {
             fromColumn.cards.splice(0, 1);
+            if (fromColumn.cards.length == 0) {
+                fromColumn.pos = -1;
+            }
             return 0;
         }
         return -1;
