@@ -59,7 +59,7 @@ export class Solitaire {
 
     preload() {
         this.game.load.atlasJSONHash('poker', 'images/cards.png', null, cardsTexture);
-        this.game.load.image('poker.empty.png', 'images/cards/empty.png');
+        // this.game.load.image('poker.empty.png', 'images/cards/empty.png');
     }
 
 
