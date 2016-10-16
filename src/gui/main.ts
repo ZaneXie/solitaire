@@ -96,6 +96,7 @@ export class Solitaire {
         let game = this.game;
         this.cardsStack = new CardsStack();
         this.cardsStack.shuffle(this.numbers);
+        game.scale.fullScreenScaleMode = Phaser.ScaleManager.EXACT_FIT;
 
         game.add.button(400, 500, 'button', ()=> {
             let string = window.localStorage.getItem('old');
@@ -118,6 +119,16 @@ export class Solitaire {
         }, this);
         game.add.button(0, 500, 'button', ()=> {
             printStack(this.cardsStack)
+        }, this);
+        game.add.button(600, 500, 'button', ()=> {
+            if (game.scale.isFullScreen)
+            {
+                game.scale.stopFullScreen();
+            }
+            else
+            {
+                game.scale.startFullScreen(false);
+            }
         }, this);
         this.dealGui.create();
         this.mainGui.create();
