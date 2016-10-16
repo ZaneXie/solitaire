@@ -9,8 +9,8 @@ export interface Point {
 }
 
 export const scaleSize: number = 1;
-export const cardWidth: number = 85;
-export const cardHeight: number = 120;
+export const cardWidth: number = 84;
+export const cardHeight: number = 122;
 
 export class LabelButton extends Phaser.Button {
     private label;

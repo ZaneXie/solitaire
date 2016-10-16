@@ -139,16 +139,20 @@ export class CardsStack {
         // 从deal取一张卡片
         let from: Card = this.deal.cards[this.deal.pos];
 
+        let canDo = false;
         // 移动到空列
         if (mainColumn.cards.length == 0) {
-
+            if(from.number === 13){
+                canDo = true;
+            }
+        }else{
+            // 目的地卡片
+            let to: Card = mainColumn.cards[0];
+            canDo = canMove(from, to);
         }
 
-        // 目的地卡片
-        let to: Card = mainColumn.cards[0];
-
         // 判断是否可移动
-        if (!canMove(from, to)) {
+        if (!canDo){
             return -1;
         }
 

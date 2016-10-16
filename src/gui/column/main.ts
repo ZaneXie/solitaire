@@ -7,7 +7,7 @@ import {Point, cardWidth, cardHeight} from "../common";
 import {DealColumn, MainColumns, MainColumn, Card} from "../../core/define";
 import lodash = require('lodash');
 import {printStack} from "../../debug/debug";
-function getPosition(column: number, row: number): Point {
+export function getMainPosition(column: number, row: number): Point {
     let x = 30 + (cardWidth + 10) * column;
     let y = 20 * row;
     return {x, y}
@@ -31,7 +31,7 @@ function calcMainColumnBounds(mainColumn: MainColumn, index: number): Phaser.Rec
         return ret;
     } else {
         // @todo: 放置一张真实卡背，须与实际卡片大小相同
-        let pos = getPosition(index, 0);
+        let pos = getMainPosition(index, 0);
         return new Phaser.Rectangle(pos.x, pos.y, cardWidth, cardHeight);
     }
 }
@@ -65,7 +65,7 @@ export class MainGui {
         let createColumn = (column: MainColumn, index: number) => {
             let size = column.cards.length;
             for (let i = size - 1; i >= 0; i--) {
-                let card = this.solitaire.createCard(column.cards[i], getPosition(index, size - 1 - i));
+                let card = this.solitaire.createCard(column.cards[i], getMainPosition(index, size - 1 - i));
                 column.cards[i].sprite = card;
                 if (i <= column.pos) {
                     column.cards[i].sprite.data.turnToFront();
@@ -136,7 +136,7 @@ export class MainGui {
                 found = true;
                 let x, y;
                 if (moveCount > targetColumn.cards.length - 1) {
-                    let pos = getPosition(index, 0);
+                    let pos = getMainPosition(index, 0);
                     x = pos.x;
                     y = pos.y;
                 } else {

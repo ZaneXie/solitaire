@@ -6,6 +6,7 @@ import {Solitaire, checkOverlap, CardGui} from "./../main";
 import {scaleSize} from "../common";
 
 import lodash = require('lodash');
+import {getMainPosition} from "./main";
 
 function getDealPosition(num: number) {
     let x = 0;
@@ -47,14 +48,21 @@ export class DealGui {
     public onDragStop(cardGui: CardGui) {
         let found = false;
         // 检查是否移动到主列
-        this.solitaire.mainGui.checkOverlap(cardGui, (targetColumn: MainColumn)=> {
+        this.solitaire.mainGui.checkOverlap(cardGui, (targetColumn: MainColumn, index:number)=> {
             if (this.solitaire.cardsStack.moveDealToMain(targetColumn) > -1) {
-                let x = targetColumn.cards[1].sprite.x;
-                let y = targetColumn.cards[1].sprite.y;
+                let x,y;
+                if(targetColumn.cards.length === 1){
+                    let pos = getMainPosition(index, 0);
+                    x = pos.x;
+                    y = pos.y;
+                }else{
+                    x = targetColumn.cards[1].sprite.x;
+                    y = targetColumn.cards[1].sprite.y + 20;
+                }
                 found = true;
                 this.clearDealCard(cardGui);
                 cardGui.x = x;
-                cardGui.y = y + 20;
+                cardGui.y = y;
                 this.solitaire.mainGui.makeCardToMainCard(cardGui);
                 this.solitaire.game.world.bringToTop(cardGui);
             }
