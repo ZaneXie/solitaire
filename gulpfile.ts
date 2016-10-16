@@ -3,7 +3,7 @@
  */
 "use strict";
 import gulp = require('gulp');
-const ts:any = require('gulp-typescript');
+const ts: any = require('gulp-typescript');
 import del =require('del');
 import mainBowerFiles = require( 'main-bower-files');
 // import webserver = require('gulp-webserver');
@@ -11,6 +11,13 @@ import minify = require('gulp-uglify');
 import path = require('path');
 import browserSync = require('browser-sync');
 
+gulp.task('ts-publish', ['clean-ts'], function () {
+    let project = ts.createProject('tsconfig.json', {out: 'main.js'});
+    let tsResult = project.src()
+        .pipe(project());
+
+    return tsResult.js.pipe(gulp.dest('public/js/app'));
+});
 gulp.task('ts-src', ['clean-ts'], function () {
     let project = ts.createProject('tsconfig.json');
     let tsResult = project.src()
@@ -38,7 +45,7 @@ gulp.task('ts-tool', function () {
     return tsResult.js.pipe(gulp.dest('tool'))
 });
 gulp.task('ts-src-test', function () {
-   let tsResult = gulp.src(["src/**/*.ts", "typings/index.d.ts", "src/**/*.d.ts"])
+    let tsResult = gulp.src(["src/**/*.ts", "typings/index.d.ts", "src/**/*.d.ts"])
         .pipe(ts({
             target: "es6",
             module: "commonjs",

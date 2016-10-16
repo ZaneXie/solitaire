@@ -49,7 +49,7 @@ export class Solitaire {
     public dealGui: DealGui;
     public mainGui: MainGui;
     public recycleGui: RecycleGui;
-    public numbers:number[] = null;
+    public numbers: number[] = null;
 
     public constructor() {
         this.dealGui = new DealGui(this);
@@ -97,12 +97,20 @@ export class Solitaire {
         this.cardsStack = new CardsStack();
         this.cardsStack.shuffle(this.numbers);
 
-        let button1 = new LabelButton(this.game, 400, 500, 'poker.empty.png', '读取记录', ()=> {
+        game.add.button(400, 500, 'button', ()=> {
             let string = window.localStorage.getItem('old');
             this.numbers = JSON.parse(string);
             this.game.destroy();
             this.start();
-        }, this, 1, 0, 2);
+        }, this);
+        /*
+         let button1 = new LabelButton(this.game, 400, 500, 'poker.empty.png', '读取记录', ()=> {
+         let string = window.localStorage.getItem('old');
+         this.numbers = JSON.parse(string);
+         this.game.destroy();
+         this.start();
+         }, this, 1, 0, 2);
+         */
 
         game.add.button(200, 500, 'button', ()=> {
             let string = JSON.stringify(this.cardsStack.numbers);
